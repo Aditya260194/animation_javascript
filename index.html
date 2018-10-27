@@ -1,0 +1,94 @@
+<html>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script>
+var ballX=0;
+var ballSpeedX=15;
+var ballY=100;
+var ballSpeedY=5;
+var paddleY=210;
+var paddle2Y=210;
+const PADDLE_HEIGHT=100;
+ window.onload = function(){
+ console.log("abc");
+	canvas = document.getElementById('gameCanvas');
+	context=canvas.getContext('2d');
+	setInterval(function(){
+	move();
+	draw();
+	},1000/15);
+	canvas.addEventListener('mousemove',
+		function(evt){
+			var mousePos = mousePosition(evt);
+			paddleY = mousePos.y - PADDLE_HEIGHT/2;
+			//paddle2Y = mousePos.y - PADDLE_HEIGHT/2;
+		}
+		);
+ }
+ function ballReset(){
+ ballSpeedX = -ballSpeedX;
+	ballX = canvas.width/2;
+	ballY = canvas.height/2;
+ }
+ function mousePosition(evt){
+ var rect = canvas.getBoundingClientRect();
+ var root = document.documentElement;
+ var mouseX = evt.clientX - rect.left - root.scrollLeft;
+ var mouseY = evt.clientY - rect.top - root.scrollTop;
+ console.log(mouseX+"logged");
+ return{
+	x:mouseX,
+	y:mouseY
+ }
+ }
+ function player2move(){
+	if(ballY - 35 > (paddle2Y+ PADDLE_HEIGHT/2))
+		paddle2Y += 6
+	else if (ballY + 35 <(paddle2Y+ PADDLE_HEIGHT/2))
+		paddle2Y -= 6
+ }
+ function move(){
+	player2move();
+	ballX = ballX + ballSpeedX;
+	ballY = ballY + ballSpeedY;
+	if(ballX < 0){
+		if(ballY >= paddleY && ballY <= paddleY + PADDLE_HEIGHT){
+			ballSpeedX = -ballSpeedX;
+			var deltaY = ballY - (paddleY + PADDLE_HEIGHT/2);
+			ballSpeedY = deltaY * .35;
+		}	
+		else
+			ballReset();
+	}
+	if(ballX > canvas.width){
+		if(ballY >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT){
+			ballSpeedX = -ballSpeedX;
+			var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);
+			ballSpeedY = deltaY * .35;
+		}	
+		else
+			ballReset();
+	}
+	if(ballY < 0){
+		ballSpeedY = -ballSpeedY;
+	}
+	if(ballY > canvas.height){
+		ballSpeedY = -ballSpeedY;
+	}
+ }
+ function draw(){
+	context.fillStyle = 'black';
+	context.fillRect(0,0,800,600);
+	context.fillStyle = 'white';
+	context.fillRect(0,paddleY,10,PADDLE_HEIGHT);
+	context.fillStyle = 'white';
+	context.fillRect(canvas.width-10,paddle2Y,10,PADDLE_HEIGHT);
+	
+	context.fillStyle = 'red';
+	context.beginPath();
+	context.arc(ballX,ballY,5,0,Math.PI*2,true);
+	context.fill();
+	//context.fillRect(ballX,150,10,10);
+ }
+</script>
+</html>
